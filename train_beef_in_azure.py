@@ -12,7 +12,7 @@ CONTAINER = os.getenv("STORAGE_CONTAINER_NAME", "meu-container")
 BLOB_PREFIX = os.getenv("AZURE_BLOB_PREFIX", "datasets/vaca_tilada/")
 
 # Onde salvar localmente
-LOCAL_DATASET_DIR = os.path.join(YOLO_FOLDER, "datasets", "vaca_tilada")
+LOCAL_DATASET_DIR = os.path.join("datasets", "vaca_tilada")
 
 # Paths locais que o YOLO vai usar
 DATA_YAML = os.path.abspath(os.path.join(LOCAL_DATASET_DIR, "data.yaml"))
