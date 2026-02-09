@@ -39,6 +39,11 @@ def download_prefix_from_blob(conn_str, container_name, prefix, local_root):
 
 
 # ========= 1) Baixa dataset do Blob para local =========
+
+print("CONN exists?", bool(CONN_STR))
+print("CONTAINER:", CONTAINER)
+print("PREFIX:", BLOB_PREFIX)
+
 download_prefix_from_blob(
     conn_str=CONN_STR,
     container_name=CONTAINER,
