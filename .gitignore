@@ -181,3 +181,5 @@ cython_debug/
 .cursorindexingignore
 datasets/
 src/yolo/
+.venv310
+.venv310b
