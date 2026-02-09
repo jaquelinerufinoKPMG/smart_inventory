@@ -33,8 +33,9 @@ def download_prefix_from_blob(conn_str, container_name, prefix, local_root):
 
     # garante pasta base
     os.makedirs(local_root, exist_ok=True)
-
+    print(container)
     for blob in container.list_blobs(name_starts_with=prefix):
+        
         blob_name = blob.name
         print(f"Processando blob: {blob_name}")
         # ignora "pastas" vazias se existirem
