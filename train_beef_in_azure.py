@@ -36,7 +36,7 @@ def download_prefix_from_blob(conn_str, container_name, prefix, local_root):
 
     for blob in container.list_blobs(name_starts_with=prefix):
         blob_name = blob.name
-
+        print(f"Processando blob: {blob_name}")
         # ignora "pastas" vazias se existirem
         if blob_name.endswith("/"):
             continue
@@ -44,7 +44,7 @@ def download_prefix_from_blob(conn_str, container_name, prefix, local_root):
         # Ex: prefix="datasets/vaca_tilada/" e blob="datasets/vaca_tilada/images/train/abc.jpg"
         # rel="images/train/abc.jpg"
         rel_path = blob_name[len(prefix):] if blob_name.startswith(prefix) else blob_name
-
+        print(f"  Caminho relativo: {rel_path}")
         local_path = os.path.join(local_root, rel_path)
         local_dir = os.path.dirname(local_path)
         os.makedirs(local_dir, exist_ok=True)
@@ -53,6 +53,7 @@ def download_prefix_from_blob(conn_str, container_name, prefix, local_root):
         with open(local_path, "wb") as f:
             data = container.download_blob(blob_name).readall()
             f.write(data)
+        print(f"  Baixado para: {local_path}")
 
     return local_root
 
