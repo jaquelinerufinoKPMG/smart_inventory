@@ -1,6 +1,9 @@
 import os
+from dotenv import load_dotenv
 from ultralytics import YOLO
 from azure.storage.blob import BlobServiceClient
+
+load_dotenv()
 
 # ========= CONFIG =========
 YOLO_FOLDER = os.getenv("YOLO_FOLDER", ".")  # base local
