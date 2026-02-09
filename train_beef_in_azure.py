@@ -6,7 +6,7 @@ from azure.storage.blob import BlobServiceClient
 YOLO_FOLDER = os.getenv("YOLO_FOLDER", ".")  # base local
 WEIGHTS_FOLDER = os.getenv("WEIGHTS_FOLDER", ".")  # base local
 CONN_STR = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
-CONTAINER = os.getenv("AZURE_BLOB_CONTAINER", "meu-container")
+CONTAINER = os.getenv("STORAGE_CONTAINER_NAME", "meu-container")
 
 # Prefixo no blob (pasta "virtual" onde está seu dataset)
 BLOB_PREFIX = os.getenv("AZURE_BLOB_PREFIX", "datasets/vaca_tilada/")
