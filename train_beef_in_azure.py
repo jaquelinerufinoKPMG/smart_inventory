@@ -51,8 +51,9 @@ def download_prefix_from_blob(conn_str, container_name, prefix, local_root):
         rel_path = blob_name[len(prefix):] if blob_name.startswith(prefix) else blob_name
         local_path = os.path.join(local_root, rel_path)
         local_dir = os.path.dirname(local_path)
-        os.makedirs(local_dir, exist_ok=True)
-        print(f"Diretório local criado: {local_dir}")
+        if local_dir.endswith("/"):
+            os.makedirs(local_dir, exist_ok=True)
+            print(f"Diretório local criado: {local_dir}")
 
         # baixa arquivo
         with open(local_path, "wb") as f:
