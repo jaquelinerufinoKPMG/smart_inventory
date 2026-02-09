@@ -29,6 +29,7 @@ def download_prefix_from_blob(conn_str, container_name, prefix, local_root):
 
     service = BlobServiceClient.from_connection_string(conn_str)
     container = service.get_container_client(container_name)
+    print(f"Baixando blobs de '{container_name}' com prefixo '{prefix}' para '{local_root}'...")
 
     # garante pasta base
     os.makedirs(local_root, exist_ok=True)
