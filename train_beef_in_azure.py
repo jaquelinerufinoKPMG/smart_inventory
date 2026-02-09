@@ -4,6 +4,7 @@ from azure.storage.blob import BlobServiceClient
 
 # ========= CONFIG =========
 YOLO_FOLDER = os.getenv("YOLO_FOLDER", ".")  # base local
+WEIGHTS_FOLDER = os.getenv("WEIGHTS_FOLDER", ".")  # base local
 CONN_STR = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
 CONTAINER = os.getenv("AZURE_BLOB_CONTAINER", "meu-container")
 
@@ -15,7 +16,7 @@ LOCAL_DATASET_DIR = os.path.join(YOLO_FOLDER, "datasets", "vaca_tilada")
 
 # Paths locais que o YOLO vai usar
 DATA_YAML = os.path.abspath(os.path.join(LOCAL_DATASET_DIR, "data.yaml"))
-WEIGHTS_PATH = os.path.abspath(os.path.join(YOLO_FOLDER, "yolo26n.pt"))
+WEIGHTS_PATH = os.path.abspath(os.path.join(WEIGHTS_FOLDER, "best.pt"))
 
 
 def download_prefix_from_blob(conn_str, container_name, prefix, local_root):
@@ -68,9 +69,9 @@ model = YOLO(WEIGHTS_PATH)
 
 model.train(
     data=DATA_YAML,
-    epochs=120,
-    imgsz=512,
-    batch=1,
     workers=0,
-    cache=False
+    epochs=60,
+    imgsz=640,
+    lr0=0.001,    # menor é mais seguro aqui
+    patience=20,  # early stopping se parar de melhorar
 )
