@@ -35,9 +35,7 @@ def download_prefix_from_blob(conn_str, container_name, prefix, local_root):
     os.makedirs(local_root, exist_ok=True)
     print(container)
     for blob in container.list_blobs():
-        
-        blob_name = blob.name
-        print(f"Processando blob: {blob_name}")
+        print(f"Processando blob: {blob}")
 
 
 # ========= 1) Baixa dataset do Blob para local =========
