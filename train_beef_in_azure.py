@@ -36,7 +36,8 @@ def download_prefix_from_blob(conn_str, container_name, prefix, local_root):
 
     # garante pasta base
     os.makedirs(local_root, exist_ok=True)
-    print(container)
+    print("Diretório local criado: ", local_root)
+
     for blob in container.list_blobs(name_starts_with=prefix):
         
         blob_name = blob.name
@@ -48,10 +49,10 @@ def download_prefix_from_blob(conn_str, container_name, prefix, local_root):
         # Ex: prefix="datasets/vaca_tilada/" e blob="datasets/vaca_tilada/images/train/abc.jpg"
         # rel="images/train/abc.jpg"
         rel_path = blob_name[len(prefix):] if blob_name.startswith(prefix) else blob_name
-        print(f"  Caminho relativo: {rel_path}")
         local_path = os.path.join(local_root, rel_path)
         local_dir = os.path.dirname(local_path)
         os.makedirs(local_dir, exist_ok=True)
+        print(f"Diretório local criado: {local_dir}")
 
         # baixa arquivo
         with open(local_path, "wb") as f:
