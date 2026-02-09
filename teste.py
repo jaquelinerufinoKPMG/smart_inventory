@@ -1,6 +1,10 @@
 import os
+from dotenv import load_dotenv
 from ultralytics import YOLO
 from azure.storage.blob import BlobServiceClient
+
+load_dotenv()
+
 
 # ========= CONFIG =========
 YOLO_FOLDER = os.getenv("YOLO_FOLDER", ".")  # base local
@@ -34,7 +38,7 @@ def download_prefix_from_blob(conn_str, container_name, prefix, local_root):
     # garante pasta base
     os.makedirs(local_root, exist_ok=True)
     print(container)
-    for blob in container.list_blobs():
+    for blob in container.list_blobs(name_starts_with=prefix):
         print(f"Processando blob: {blob}")
 
 
