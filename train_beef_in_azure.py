@@ -23,46 +23,50 @@ WEIGHTS_PATH = os.path.abspath(os.path.join(WEIGHTS_FOLDER, "best.pt"))
 
 
 def download_prefix_from_blob(conn_str, container_name, prefix, local_root):
-    """
-    Baixa todos os blobs cujo nome começa com `prefix` para dentro de `local_root`,
-    preservando subpastas.
-    """
     if not conn_str:
         raise ValueError("AZURE_STORAGE_CONNECTION_STRING não definido.")
 
+    # garante prefix com barra no final
+    if prefix and not prefix.endswith("/"):
+        prefix = prefix + "/"
+
     service = BlobServiceClient.from_connection_string(conn_str)
     container = service.get_container_client(container_name)
+
     print(f"Baixando blobs de '{container_name}' com prefixo '{prefix}' para '{local_root}'...")
 
-    # garante pasta base
     os.makedirs(local_root, exist_ok=True)
-    print("Diretório local criado: ", local_root)
+    print("Diretório local criado:", os.path.abspath(local_root))
 
     for blob in container.list_blobs(name_starts_with=prefix):
-        
         blob_name = blob.name
         print(f"Processando blob: {blob_name}")
-        # ignora "pastas" vazias se existirem
+
         if blob_name.endswith("/"):
             continue
 
-        # Ex: prefix="datasets/vaca_tilada/" e blob="datasets/vaca_tilada/images/train/abc.jpg"
-        # rel="images/train/abc.jpg"
+        # caminho relativo dentro do prefixo
         rel_path = blob_name[len(prefix):] if blob_name.startswith(prefix) else blob_name
-        local_path = os.path.join(local_root, rel_path)
-        local_dir = os.path.dirname(local_path)
-        if local_dir.endswith("/"):
-            os.makedirs(local_dir, exist_ok=True)
-            print(f"Diretório local criado: {local_dir}")
+        rel_path = rel_path.lstrip("/\\")  # evita virar path absoluto
 
-        # baixa arquivo
+        local_path = os.path.normpath(os.path.join(local_root, rel_path))
+
+        # proteção extra: impede escapar do diretório base (segurança)
+        base_abs = os.path.abspath(local_root) + os.sep
+        local_abs = os.path.abspath(local_path)
+        if not local_abs.startswith(base_abs):
+            raise ValueError(f"Blob path suspeito (escapa do diretório base): {blob_name} -> {local_abs}")
+
+        local_dir = os.path.dirname(local_path)
+        if local_dir:
+            os.makedirs(local_dir, exist_ok=True)
+
         with open(local_path, "wb") as f:
-            data = container.download_blob(blob_name).readall()
-            f.write(data)
-        print(f"  Baixado para: {local_path}")
+            f.write(container.download_blob(blob_name).readall())
+
+        print("  Baixado para:", local_path)
 
     return local_root
-
 
 # ========= 1) Baixa dataset do Blob para local =========
 download_prefix_from_blob(
