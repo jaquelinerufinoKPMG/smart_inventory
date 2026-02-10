@@ -22,7 +22,7 @@ DATA_YAML = os.path.abspath(os.path.join(LOCAL_DATASET_DIR, "data.yaml"))
 WEIGHTS_PATH = os.path.abspath(os.path.join(WEIGHTS_FOLDER, "best.pt"))
 
 
-def download_prefix_from_blob(conn_str, container_name, prefix, local_root):
+def download_prefix_from_blob(conn_str, container_name, prefix, local_root, skip_if_exists=True, verify_size=True):
     if not conn_str:
         raise ValueError("AZURE_STORAGE_CONNECTION_STRING não definido.")
 
@@ -38,9 +38,11 @@ def download_prefix_from_blob(conn_str, container_name, prefix, local_root):
     os.makedirs(local_root, exist_ok=True)
     print("Diretório local criado:", os.path.abspath(local_root))
 
+    baixados = 0
+    pulados = 0
+
     for blob in container.list_blobs(name_starts_with=prefix):
         blob_name = blob.name
-        print(f"Processando blob: {blob_name}")
 
         if blob_name.endswith("/"):
             continue
@@ -57,16 +59,36 @@ def download_prefix_from_blob(conn_str, container_name, prefix, local_root):
         if not local_abs.startswith(base_abs):
             raise ValueError(f"Blob path suspeito (escapa do diretório base): {blob_name} -> {local_abs}")
 
+        # se já existe, pode pular
+        if skip_if_exists and os.path.exists(local_path):
+            if verify_size:
+                try:
+                    local_size = os.path.getsize(local_path)
+                except OSError:
+                    local_size = -1
+
+                remote_size = getattr(blob, "size", None)  # list_blobs costuma trazer
+                if remote_size is not None and local_size == remote_size:
+                    pulados += 1
+                    # print(f"Pulando (já existe e tamanho bate): {local_path}")
+                    continue
+            else:
+                pulados += 1
+                continue
+
         local_dir = os.path.dirname(local_path)
         if local_dir:
             os.makedirs(local_dir, exist_ok=True)
 
+        print(f"Baixando: {blob_name} -> {local_path}")
         with open(local_path, "wb") as f:
             f.write(container.download_blob(blob_name).readall())
 
-        print("  Baixado para:", local_path)
+        baixados += 1
 
+    print(f"Download finalizado. Baixados: {baixados} | Pulados: {pulados}")
     return local_root
+
 
 # ========= 1) Baixa dataset do Blob para local =========
 download_prefix_from_blob(
