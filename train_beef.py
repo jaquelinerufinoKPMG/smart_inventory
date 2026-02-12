@@ -11,15 +11,17 @@ data_yaml = (folder_path / "datasets" / "vaca_tilada" / "data.yaml").resolve()
 
 # 3) Escolha UMA abordagem:
 #    - Transfer learning (recomendado): carregar .pt pretreinado
-weights_path = (folder_path / "yolo26n.pt").resolve()
+weights_path = (folder_path / "src" / "weights" / "best.pt").resolve()
+
 model = YOLO(str(weights_path))
 
-# 4) Treino com pasta de saída fixa + checkpoint frequente
 model.train(
     data=str(data_yaml),
-    epochs=120,
-    imgsz=512,
+    epochs=60,
+    imgsz=640,        # combina com tile 640x640
     batch=1,
     workers=0,
-    cache=False
+    cache=False,
+    lr0=0.001,
+    patience=20,
 )
