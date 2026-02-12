@@ -91,12 +91,12 @@ def download_prefix_from_blob(conn_str, container_name, prefix, local_root, skip
 
 
 # ========= 1) Baixa dataset do Blob para local =========
-# download_prefix_from_blob(
-#     conn_str=CONN_STR,
-#     container_name=CONTAINER,
-#     prefix=BLOB_PREFIX,
-#     local_root=LOCAL_DATASET_DIR
-# )
+download_prefix_from_blob(
+    conn_str=CONN_STR,
+    container_name=CONTAINER,
+    prefix=BLOB_PREFIX,
+    local_root=LOCAL_DATASET_DIR
+)
 
 # ========= 2) Treina normalmente =========
 model = YOLO(WEIGHTS_PATH)
