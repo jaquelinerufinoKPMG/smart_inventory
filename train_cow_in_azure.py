@@ -108,4 +108,6 @@ model.train(
     lr0=0.001,    # menor é mais seguro aqui
     patience=20,  # early stopping se parar de melhorar
     conf=0.6,
+    lr0=0.001,
+    patience=20,
 )
