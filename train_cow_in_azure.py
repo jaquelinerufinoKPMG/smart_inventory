@@ -106,8 +106,4 @@ model.train(
     epochs=160,
     imgsz=640,
     lr0=0.001,    # menor é mais seguro aqui
-    patience=20,  # early stopping se parar de melhorar
-    conf=0.6,
-    lr0=0.001,
-    patience=20,
-)
+patience=20, # early stopping se parar de melhorar conf=0.6, lr0=0.001, resume=True, )
