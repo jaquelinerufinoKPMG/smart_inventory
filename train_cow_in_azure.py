@@ -12,7 +12,7 @@ CONN_STR = os.getenv("AZURE_STORAGE_CONNECTION_STRING")
 CONTAINER = os.getenv("STORAGE_CONTAINER_NAME", "meu-container")
 
 # Prefixo no blob (pasta "virtual" onde está seu dataset)
-BLOB_PREFIX = os.getenv("vaca", "datasets/vaca/")
+BLOB_PREFIX = "vaca"
 
 # Onde salvar localmente
 LOCAL_DATASET_DIR = os.path.join("datasets", "vaca")
