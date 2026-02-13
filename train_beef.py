@@ -24,4 +24,5 @@ model.train(
     cache=False,
     lr0=0.001,
     patience=20,
+    resume=True,
 )
