@@ -108,5 +108,5 @@ model.train(
     lr0=0.001,
     patience=20, 
     conf=0.6, 
-    lr0=0.001,
-    resume=True )
+    #resume=True,
+)
