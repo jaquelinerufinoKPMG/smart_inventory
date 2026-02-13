@@ -7,10 +7,13 @@ model = YOLO(model_path)
 
 model.train(
     data=yaml_path,
-    workers=0,
     epochs=160,
     imgsz=640,
+    batch=16,
+    workers=0,
+    optimizer="SGD",
     lr0=0.001,
-    patience=20, 
-    conf=0.6, 
+    momentum=0.937,
+    mosaic=0.2,
+    mixup=0.0,
 )
