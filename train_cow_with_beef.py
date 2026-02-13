@@ -1,7 +1,9 @@
+import os
+
 from ultralytics import YOLO
 
-model_path = fr"runs\detect\train2\weights\best.pt"
-yaml_path = fr"datasets\vaca_tilada\data.yaml"
+model_path = os.path.join("runs","detect","train2","weights","best.pt")
+yaml_path = os.path.join("datasets","vaca_tilada","data.yaml")
 
 model = YOLO(model_path)
 
