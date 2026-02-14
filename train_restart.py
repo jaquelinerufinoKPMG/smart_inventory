@@ -4,6 +4,6 @@ from ultralytics import YOLO
 #model = YOLO("runs/detect/train3/weights/last.pt")
 
 #TREINAMENTO DAS VACA INTEIRA COM O MODELO yolo26l
-model = YOLO("runs/detect/train4/weights/last.pt")
+model = YOLO("runs/detect/train5/weights/last.pt")
 
 model.train(resume=True)
