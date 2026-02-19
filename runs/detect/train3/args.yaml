@@ -1,11 +1,11 @@
 task: detect
 mode: train
-model: C:\_projects\dev\smart_inventory\src\weights\best.pt
-data: C:\_projects\dev\smart_inventory\datasets\vaca_tilada\data.yaml
-epochs: 60
+model: runs\detect\train2\weights\best.pt
+data: datasets\vaca_tilada\data.yaml
+epochs: 160
 time: null
 patience: 20
-batch: 1
+batch: 16
 imgsz: 640
 save: true
 save_period: -1
@@ -13,7 +13,7 @@ cache: false
 device: cpu
 workers: 0
 project: null
-name: train5
+name: train3
 exist_ok: false
 pretrained: true
 optimizer: auto
@@ -37,7 +37,7 @@ dropout: 0.0
 val: true
 split: val
 save_json: false
-conf: null
+conf: 0.6
 iou: 0.7
 max_det: 300
 half: false
@@ -105,4 +105,4 @@ auto_augment: randaugment
 erasing: 0.4
 cfg: null
 tracker: botsort.yaml
-save_dir: C:\_projects\dev\smart_inventory\runs\detect\train5
+save_dir: C:\_projects\dev\smart_inventory\runs\detect\train3
