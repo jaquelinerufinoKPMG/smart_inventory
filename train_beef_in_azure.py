@@ -19,7 +19,7 @@ LOCAL_DATASET_DIR = os.path.join("datasets", "vaca_tilada")
 
 # Paths locais que o YOLO vai usar
 DATA_YAML = os.path.abspath(os.path.join(LOCAL_DATASET_DIR, "data.yaml"))
-WEIGHTS_PATH = os.path.abspath(os.path.join(WEIGHTS_FOLDER, "best.pt"))
+WEIGHTS_PATH = os.path.abspath("yolo26l.pt")
 
 
 def download_prefix_from_blob(conn_str, container_name, prefix, local_root, skip_if_exists=True, verify_size=True):
@@ -104,7 +104,7 @@ model = YOLO(WEIGHTS_PATH)
 model.train(
     data=DATA_YAML,
     workers=0,
-    epochs=60,
+    epochs=1000,
     imgsz=640,
     lr0=0.001,    # menor é mais seguro aqui
     patience=20,  # early stopping se parar de melhorar
