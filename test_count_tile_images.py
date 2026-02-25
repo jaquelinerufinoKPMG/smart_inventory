@@ -425,8 +425,8 @@ def run_predict_merge_count(cfg: PredictConfig) -> Tuple[Path, Path]:
 
 if __name__ == "__main__":
     # --------- Ajuste esses caminhos ----------
-    base_in = Path(r"datasets\vaca")             # orig
-    base_out_tiles = Path(r"datasets\vaca_cortada")  # tiles
+    base_in = Path(r"datasets\cristal")             # orig
+    base_out_tiles = Path(r"datasets\cristal_cortada")  # tiles
     weights_path = Path(r"src\yolo models\train_91.pt")     # seu best.pt
 
     # --------- 1) (Opcional) gerar tiles + tiles.csv ----------
@@ -444,7 +444,7 @@ if __name__ == "__main__":
     )
 
     # --------- 2) predict + merge + count ----------
-    out_pred = Path(r"data\output\cow_count")
+    out_pred = base_out_tiles #Path(r"data\output\cow_count")
 
     cfg = PredictConfig(
         weights_path=weights_path,

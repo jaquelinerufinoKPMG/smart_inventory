@@ -98,6 +98,19 @@ Retoma treino a partir de checkpoint salvo.
 python restart_train.py
 ```
 
+### 4) Retomar treino no Linux com script
+Se o projeto estiver em `~/smart_inventory`, use o script auxiliar:
+
+```bash
+chmod +x smart_inventory/restart_train_linux.sh
+smart_inventory/restart_train_linux.sh
+```
+
+O script:
+- entra na pasta `~/smart_inventory`;
+- ativa o ambiente virtual `.venv`;
+- executa `python restart_train.py`.
+
 ## Scripts auxiliares
 - `src/create_tiled_images.py`: gera tiles e recalcula labels YOLO por tile.
 - `src/create_yaml.py`: gera `data.yaml` para dataset.
@@ -112,11 +125,19 @@ python restart_train.py
 - [x] Geração de dataset tilado
 - [x] Retomada de treino por checkpoint
 - [x] Exportação de pesos (`.pt`, `.onnx`)
-- [ ] Padronizar caminhos para execução cross-platform
-- [ ] Adicionar testes automatizados para scripts críticos
-- [ ] Publicar benchmark fixo de validação (split + seed + baseline)
-- [ ] Definir estratégia de versionamento de modelos
-- [ ] Definir licença do projeto
+- [x] Gerar treino do yolo26l.pt para imagens inteiras
+- [ ] Gerar treino do yolo26l.pt para imagens cortadas (Em andamento)
+- [ ] Gerar treino do yolo26l.pt para imagens inteiras com data augmentation
+- [ ] Gerar treino do yolo26l.pt para imagens cortadas com data augmentation
+- [ ] Validação da qualidade de imagens 
+      - Atenção à esse ponto já que precisa melhorar o dataset de treinamento/validação
+         - As imagens do treinamento para essa validação devem ser o Ideal Perfeito (altura certa, ângulo certo)
+      - O arquivo que contem esses testes é `image_validation.ipynb`
+- [ ] Contagem precisa de imagens
+      - Não está preciso
+      - São os arquivos:
+         - `train_tiled_images.py`
+         - `test_count_tile_images.py`
 
 ## Limitações conhecidas
 - Existem caminhos absolutos em alguns scripts (orientados ao ambiente Windows local).

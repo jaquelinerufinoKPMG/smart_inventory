@@ -263,4 +263,3 @@ src/yolo/
 runs/detect/predict*
 runs/detect/val*
 data/output/
-teste_imagens.ipynb

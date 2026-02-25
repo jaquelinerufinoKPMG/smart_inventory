@@ -54,3 +54,50 @@ def extract_metrics(image_path: Path) -> ImgMetrics:
         pct_white=pct_white,
         entropy=ent,
     )
+
+def score_against_profile(m: ImgMetrics, profile: dict) -> tuple[float, dict]:
+    feats = profile["features"]
+    z = {}
+    for k, stats in feats.items():
+        val = getattr(m, k)
+        z[k] = (val - stats["mean"]) / stats["std"]
+
+    # score global (L2 dos z-scores)
+    score = float(np.sqrt(np.sum(np.array(list(z.values())) ** 2)))
+    return score, z
+
+def classify(m: ImgMetrics, profile: dict) -> tuple[str, float, dict]:
+    score, z = score_against_profile(m, profile)
+
+    # guardrails simples baseados em percentis do dataset original
+    feats = profile["features"]
+    hard_fail = []
+    warn = []
+
+    # brilho fora do miolo (p05-p95) vira warning; muito fora vira fail
+    b = m.brightness_mean
+    if b < feats["brightness_mean"]["p05"] or b > feats["brightness_mean"]["p95"]:
+        warn.append("brightness_outside_p05_p95")
+
+    # nitidez muito baixa (abaixo p05) costuma ser problema real
+    if m.sharpness_lap_var < feats["sharpness_lap_var"]["p05"]:
+        hard_fail.append("too_blurry")
+
+    # muito estourado / muito preto
+    if m.pct_white > 5.0:
+        warn.append("too_much_white_clip")
+    if m.pct_black > 5.0:
+        warn.append("too_much_black_crush")
+
+    # score de distância global
+    # (calibrável: ~3-5 costuma ser “ok”, >7-9 costuma ser “longe”, dependendo do dataset)
+    if score >= 9.0:
+        hard_fail.append("too_far_global")
+    elif score >= 6.0:
+        warn.append("far_global")
+
+    if hard_fail:
+        return "FAIL", score, {"hard_fail": hard_fail, "warn": warn, "z": z}
+    if warn:
+        return "WARN", score, {"hard_fail": hard_fail, "warn": warn, "z": z}
+    return "PASS", score, {"hard_fail": hard_fail, "warn": warn, "z": z}
