@@ -14,6 +14,7 @@ Pipeline de visão computacional para detecção de vacas em imagens, com foco e
 - [Arquitetura do projeto](#arquitetura-do-projeto)
 - [Pré-requisitos](#pré-requisitos)
 - [Setup rápido](#setup-rápido)
+- [Git LFS](#git-lfs)
 - [Como usar](#como-usar)
 - [Scripts auxiliares](#scripts-auxiliares)
 - [Roadmap](#roadmap)
@@ -24,7 +25,9 @@ Este projeto cobre o ciclo completo de detecção de objetos (classe `cow`) usan
 - ingestão de dataset a partir do Azure Blob Storage;
 - preparação opcional com tiling de imagens;
 - treino e retomada de treino a partir de checkpoints;
-- análise de qualidade de imagem e comparação entre pesos treinados.
+- análise de qualidade de imagem e comparação entre pesos treinados;
+- contagem por imagem original com predição em tiles + merge global com NMS;
+- redimensionamento em lote de imagens para padronização de entrada.
 
 ## Resultados atuais
 Resumo dos melhores pontos de cada treino salvo em `runs/detect/*/results.csv` (critério: maior `mAP50-95(B)`).
@@ -44,6 +47,8 @@ smart_inventory/
 |- train.py
 |- train_tiled_images.py
 |- restart_train.py
+|- test_count_tile_images.py
+|- image_validation.ipynb
 |- requirements.txt
 |- datasets/
 |- data/
@@ -55,7 +60,8 @@ smart_inventory/
    |- generate_data_analysis.py
    |- extract_image_metrics.py
    |- build_profile.py
-   `- draw_bounding_boxes.py
+   |- draw_bounding_boxes.py
+   `- image_resize.py
 ```
 
 ## Pré-requisitos
@@ -76,6 +82,36 @@ pip install -r requirements.txt
 AZURE_STORAGE_CONNECTION_STRING="<sua_connection_string_do_azure_blob>"
 ```
 
+## Git LFS
+Este projeto usa Git LFS para versionar arquivos grandes (ex.: pesos `.pt`, `.onnx` e artefatos de treino).
+
+### Primeira vez na máquina
+```bash
+git lfs install
+git lfs pull
+```
+
+### Clonagem recomendada
+```bash
+git clone <url-do-repo>
+cd smart_inventory
+git lfs install
+git lfs pull
+```
+
+### Quando adicionar novos arquivos grandes
+```bash
+git lfs track "*.pt" "*.onnx"
+git add .gitattributes
+git add <arquivo-grande>
+git commit -m "chore: adiciona arquivo grande via git lfs"
+```
+
+### Verificação rápida
+```bash
+git lfs ls-files
+```
+
 ## Como usar
 ### 1) Treino padrão
 Baixa dataset do Azure (container `blobarcelor`, prefixo `vaca`) para `datasets/vaca` e inicia treino com `yolo26l.pt`.
@@ -85,7 +121,7 @@ python train.py
 ```
 
 ### 2) Treino com imagens tiladas
-Executa treino usando `datasets/vaca_tilada`.
+Executa treino usando `datasets/vaca_tilada` com `epochs=1000`.
 
 ```bash
 python train_tiled_images.py
@@ -111,6 +147,18 @@ O script:
 - ativa o ambiente virtual `.venv`;
 - executa `python restart_train.py`.
 
+### 5) Pipeline de contagem em tiles (merge + NMS)
+Executa predição por tile, converte detecções para coordenadas da imagem original, remove duplicatas com NMS global e salva contagem final por imagem.
+
+```bash
+python test_count_tile_images.py
+```
+
+Saídas principais:
+- `*_counts.csv`: contagem final por imagem original.
+- `*_detections_merged.csv`: detecções finais após deduplicação.
+- `overlays/*.jpg`: imagem com boxes finais e `COUNT`.
+
 ## Scripts auxiliares
 - `src/create_tiled_images.py`: gera tiles e recalcula labels YOLO por tile.
 - `src/create_yaml.py`: gera `data.yaml` para dataset.
@@ -118,6 +166,7 @@ O script:
 - `src/extract_image_metrics.py`: extrai métricas de imagem (brilho, contraste, nitidez, entropia).
 - `src/build_profile.py`: consolida estatísticas do dataset em JSON.
 - `src/draw_bounding_boxes.py`: desenha boxes de labels YOLO em imagens.
+- `src/image_resize.py`: redimensiona imagens em lote para resolução fixa.
 
 ## Roadmap
 - [x] Pipeline de treino YOLO funcional
@@ -126,18 +175,15 @@ O script:
 - [x] Retomada de treino por checkpoint
 - [x] Exportação de pesos (`.pt`, `.onnx`)
 - [x] Gerar treino do yolo26l.pt para imagens inteiras
-- [ ] Gerar treino do yolo26l.pt para imagens cortadas (Em andamento)
+- [x] Gerar treino do yolo26l.pt para imagens cortadas
 - [ ] Gerar treino do yolo26l.pt para imagens inteiras com data augmentation
 - [ ] Gerar treino do yolo26l.pt para imagens cortadas com data augmentation
 - [ ] Validação da qualidade de imagens 
       - Atenção à esse ponto já que precisa melhorar o dataset de treinamento/validação
          - As imagens do treinamento para essa validação devem ser o Ideal Perfeito (altura certa, ângulo certo)
       - O arquivo que contem esses testes é `image_validation.ipynb`
-- [ ] Contagem precisa de imagens
-      - Não está preciso
-      - São os arquivos:
-         - `train_tiled_images.py`
-         - `test_count_tile_images.py`
+- [x] Pipeline de contagem em tiles com deduplicação por NMS
+- [ ] Ajuste fino de limiares de contagem (`conf_thr` e `iou_thr_nms`) para reduzir falso positivo/negativo em produção
 
 ## Limitações conhecidas
 - Existem caminhos absolutos em alguns scripts (orientados ao ambiente Windows local).
