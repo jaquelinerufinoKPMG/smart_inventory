@@ -28,7 +28,7 @@ model = YOLO("yolo26l.pt")
 model.train(
     data=DATA_YAML,
     workers=0,
-    epochs=500,
+    epochs=1000,
     imgsz=640,
     lr0=0.001,
     patience=20,
