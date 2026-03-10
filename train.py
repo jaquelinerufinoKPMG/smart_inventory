@@ -19,18 +19,38 @@ DATA_YAML = Path.joinpath(LOCAL_DATASET_DIR, "data.yaml")
 
 # ========= 1) Baixa dataset do Blob para local =========
 downloadData(container_name=CONTAINER).download_files(
-    prefix="vaca", local_root=LOCAL_DATASET_DIR
+    prefix="vaca",
+    local_root=LOCAL_DATASET_DIR
 )
 
-# ========= 2) Treina normalmente =========
+# ========= 2) Treinamento =========
 model = YOLO("yolo26l.pt")
 
 model.train(
     data=DATA_YAML,
-    workers=0,
-    epochs=500,
+
+    # Treinamento
+    epochs=1000,
     imgsz=640,
+    batch=16,
+
+    # Performance
+    workers=os.cpu_count(),  
+    cache=True,               
+    amp=True,                 
+    device=0,                 
+
+    # Otimização
     lr0=0.001,
     patience=20,
     conf=0.6,
+
+    # estabilidade
+    cos_lr=True,
+    close_mosaic=10,
+    pretrained=True,
+    optimizer="AdamW",
+
+    # aceleração de dataloader
+    persistent_workers=True
 )
