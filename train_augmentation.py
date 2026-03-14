@@ -42,7 +42,7 @@ model.train(
     data=DATA_YAML,
 
     # treino
-    epochs=300,
+    epochs=150,
     imgsz=640,
 
     # performance
